@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Usuarios extends Model
+class Sesiones_code extends Model
 {
     use HasFactory;
-    protected $fillable = ['nombres_completos','correo','telefono','pin'];
+
+    protected $fillable = ['usuario_id','otp_code'];
 }

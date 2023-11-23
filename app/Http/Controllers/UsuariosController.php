@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Http\Controllers\SesionesCodeController;
 use App\Models\Usuarios;
 use Illuminate\Http\Request;
-
+use App\Services\OTPCode;
+use Illuminate\Support\Facades\Hash;
+use DB;
 class UsuariosController extends Controller
 {
     public function index()
@@ -16,17 +18,17 @@ class UsuariosController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string',
+            'nombres_completos' => 'required|string',
             'correo' => 'required|email|unique:usuarios',
             'telefono' => 'required|string',
-            'saldo' => 'required|numeric',
+            'pin' => 'required|string',
         ]);
 
         $usuario = new Usuarios([
-            'nombre' => $request->input('nombre'),
+            'nombres_completos' => $request->input('nombres_completos'),
             'correo' => $request->input('correo'),
             'telefono' => $request->input('telefono'),
-            'saldo' => $request->input('saldo'),
+            'pin' =>Hash::make ($request->input('pin')),
         ]);
 
         $usuario->save();
@@ -54,16 +56,16 @@ class UsuariosController extends Controller
         }
 
         $request->validate([
-            'nombre' => 'required|string',
+            'nombres_completos' => 'required|string',
             'correo' => 'required|email|unique:usuarios,correo,' . $usuario->id,
-            'telefono' => 'required|string',
-            'saldo' => 'required|numeric',
+            'telefono' => 'required|string|unique:usuarios,telefono'. $usuario->id,
+            'pin' => 'required|string',
         ]);
 
-        $usuario->nombre = $request->input('nombre');
+        $usuario->nombre = $request->input('nombres_completos');
         $usuario->correo = $request->input('correo');
         $usuario->telefono = $request->input('telefono');
-        $usuario->saldo = $request->input('saldo');
+        $usuario->saldo = $request->input('pin');
 
         $usuario->save();
 
@@ -81,5 +83,36 @@ class UsuariosController extends Controller
         $usuario->delete();
 
         return response()->json(['message' => 'Usuarios eliminado'], 200);
+    }
+
+    public function Enviar_codigo_otp(Request $request,OTPCode $otp){
+        $telefono=$request->telefono;
+        return response(["message"=>$otp->enviar_codigo_con_sms($telefono)]);
+    }
+
+    public function Login_usuario(Request $request,OTPCode $otp){
+        $usuario_encontrado=DB::table("usuarios")
+        ->where(
+            [
+                "telefono"=>$request->telefono,
+            ]
+            )
+        ->first();
+
+
+        if($usuario_encontrado && Hash::check($request->pin, $usuario_encontrado->pin)){
+            //los datos existen envia el codigo 
+
+            //obtener el codigo que envie al cel
+            $codigo_otp=$otp->enviar_codigo_con_sms($usuario_encontrado->telefono,$usuario_encontrado->nombres_completos);
+            //funcion para guardar un codigo otp en la bd 
+            $guardar_otp= new SesionesCodeController();
+           $resultado=  $guardar_otp->store($usuario_encontrado->id,$codigo_otp);
+           return response(["data"=>"Codigo OTP enviado","codigo"=>2]);
+        }else{
+            return response(["data"=>"error en algo","codigo"=>1]);
+        }
+
+        return response(["data"=>$usuario_encontrado,"oass"=>Hash::make ($request->pin)]);
     }
 }
