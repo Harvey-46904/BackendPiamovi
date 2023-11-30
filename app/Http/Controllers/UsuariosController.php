@@ -17,18 +17,27 @@ class UsuariosController extends Controller
 
     public function store(Request $request)
     {
+        return response(["data"=>$request->all()]);
         $request->validate([
             'nombres_completos' => 'required|string',
             'correo' => 'required|email|unique:usuarios',
             'telefono' => 'required|string',
             'pin' => 'required|string',
+            'fecha_nacimiento' => 'required|string',
+            'genero' => 'required|string',
+            'acuerdos' => 'required|string',
         ]);
 
+
+    
         $usuario = new Usuarios([
             'nombres_completos' => $request->input('nombres_completos'),
             'correo' => $request->input('correo'),
             'telefono' => $request->input('telefono'),
             'pin' =>Hash::make ($request->input('pin')),
+            'fecha_nacimiento' => $request->input('fecha_nacimiento'),
+            'genero' => $request->input('genero'),
+            'acuerdos' => $request->input('telefono'),
         ]);
 
         $usuario->save();

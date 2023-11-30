@@ -19,6 +19,9 @@ class CreateUsuariosTable extends Migration
             $table->string('telefono')->unique();
             $table->string('correo');
             $table->string('pin');
+            $table->date('fecha_nacimiento');
+            $table->string('genero');
+            $table->boolean('acuerdos');
             $table->timestamps();
         });
     }
