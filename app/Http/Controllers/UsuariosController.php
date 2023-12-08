@@ -17,7 +17,7 @@ class UsuariosController extends Controller
 
     public function store(Request $request)
     {
-        return response(["data"=>$request->all()]);
+       
         $request->validate([
             'nombres_completos' => 'required|string',
             'correo' => 'required|email|unique:usuarios',
@@ -25,11 +25,11 @@ class UsuariosController extends Controller
             'pin' => 'required|string',
             'fecha_nacimiento' => 'required|string',
             'genero' => 'required|string',
-            'acuerdos' => 'required|string',
+            'acuerdos' => 'required|boolean',
         ]);
 
-
-    
+ 
+     
         $usuario = new Usuarios([
             'nombres_completos' => $request->input('nombres_completos'),
             'correo' => $request->input('correo'),
@@ -37,11 +37,11 @@ class UsuariosController extends Controller
             'pin' =>Hash::make ($request->input('pin')),
             'fecha_nacimiento' => $request->input('fecha_nacimiento'),
             'genero' => $request->input('genero'),
-            'acuerdos' => $request->input('telefono'),
+            'acuerdos' => $request->input('acuerdos'),
         ]);
 
         $usuario->save();
-
+        return response(["data"=>"datos guardados con exito"]);
         return response()->json($usuario, 201);
     }
 
