@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Services\OTPCode;
 use Illuminate\Support\Facades\Hash;
 use DB;
+use Validator;
 class UsuariosController extends Controller
 {
     public function index()
@@ -17,34 +18,49 @@ class UsuariosController extends Controller
 
     public function store(Request $request)
     {
-       
-        $request->validate([
+        $guardar = [
             'nombres_completos' => 'required|string',
             'correo' => 'required|email|unique:usuarios',
-            'telefono' => 'required|string',
+            'telefono' => 'required|string|unique:usuarios',
             'pin' => 'required|string',
             'fecha_nacimiento' => 'required|string',
             'genero' => 'required|string',
             'acuerdos' => 'required|boolean',
-        ]);
+         ];
 
- 
-     
-        $usuario = new Usuarios([
-            'nombres_completos' => $request->input('nombres_completos'),
-            'correo' => $request->input('correo'),
-            'telefono' => $request->input('telefono'),
-            'pin' =>Hash::make ($request->input('pin')),
-            'fecha_nacimiento' => $request->input('fecha_nacimiento'),
-            'genero' => $request->input('genero'),
-            'acuerdos' => $request->input('acuerdos'),
-        ]);
+         $messages = [
+            'nombres_completos'  => 'The :attribute and  types: :values',
+            'correo' => 'The :attribute and  types: :values',
+            'telefono' => 'The :attribute and  types: :values',
+            'pin'=> 'The :attribute and  types: :values',
+            'fecha_nacimiento'=> 'The :attribute and  types: :values',
+            'genero'=> 'The :attribute and  types: :values',
+            'acuerdos'=> 'The :attribute and  types: :values',
+        ];
+       
+       
 
-        $usuario->save();
-        return response(["data"=>"datos guardados con exito"]);
-        return response()->json($usuario, 201);
+        $validator = Validator::make($request->all(), $guardar,  $messages);
+       
+        if ($validator->fails()) {
+            return response(['data_error'=>$validator->errors()]);
+        }
+        else{
+            $usuario = new Usuarios([
+                'nombres_completos' => $request->input('nombres_completos'),
+                'correo' => $request->input('correo'),
+                'telefono' => $request->input('telefono'),
+                'pin' =>Hash::make ($request->input('pin')),
+                'fecha_nacimiento' => $request->input('fecha_nacimiento'),
+                'genero' => $request->input('genero'),
+                'acuerdos' => $request->input('acuerdos'),
+            ]);
+    
+            $usuario->save();
+            return response(["data"=>"usuario guardado"]);
+            return response()->json($usuario, 201);
+        }
     }
-
     public function show($id)
     {
         $usuario = Usuarios::find($id);
