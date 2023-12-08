@@ -17,7 +17,7 @@ class UsuariosController extends Controller
 
     public function store(Request $request)
     {
-        return response(["data"=>$request->all()]);
+       // return response(["data"=>$request->all()]);
         $request->validate([
             'nombres_completos' => 'required|string',
             'correo' => 'required|email|unique:usuarios',
