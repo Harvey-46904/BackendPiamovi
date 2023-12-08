@@ -37,7 +37,9 @@ Route::resource('pagos', 'PagosController');
 Route::resource('resenas', 'ResenasController');
 
 
-Route::post("sesion_otp","UsuariosController@Enviar_codigo_otp");
+//Route::post("sesion_otp","UsuariosController@Enviar_codigo_otp");
 Route::post("Login_usuario","UsuariosController@Login_usuario");
 Route::post("verificar_otp","SesionesCodeController@verificar_otp");
+
+
 

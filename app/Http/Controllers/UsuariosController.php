@@ -127,12 +127,12 @@ class UsuariosController extends Controller
 
         if($usuario_encontrado && Hash::check($request->pin, $usuario_encontrado->pin)){
             //los datos existen envia el codigo 
-
+/*
             //obtener el codigo que envie al cel
             $codigo_otp=$otp->enviar_codigo_con_sms($usuario_encontrado->telefono,$usuario_encontrado->nombres_completos);
             //funcion para guardar un codigo otp en la bd 
             $guardar_otp= new SesionesCodeController();
-           $resultado=  $guardar_otp->store($usuario_encontrado->id,$codigo_otp);
+           $resultado=  $guardar_otp->store($usuario_encontrado->id,$codigo_otp);*/
            return response(["data"=>"Codigo OTP enviado","codigo"=>2]);
         }else{
             return response(["data"=>"error en algo","codigo"=>1]);

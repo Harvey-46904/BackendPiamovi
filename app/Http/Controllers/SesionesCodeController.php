@@ -32,7 +32,7 @@ class SesionesCodeController extends Controller
         ->first();
 
         if($usuario_encontrado && Hash::check($request->code_otp, $usuario_encontrado->otp_code)){
-           return response(["data"=>"Codigo OTP correcto"]);
+           return response(["data"=>$usuario_encontrado]);
         }else{
             return response(["data"=>"Codigo OTP incorrecto"]);
         }
